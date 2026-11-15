@@ -219,12 +219,18 @@ contrast against a ratchet baseline that is currently empty, and checks reflow, 
 has no rule for.
 
 **Mutation testing** (`npm run test:mutation`) applies each patch in
-`e2e/verdict-mutations.json` to an isolated `git archive HEAD` tree, confirms the build
-succeeds and the bundle hash moves, and confirms the owning test fails. Eight mutations are
-recorded, including key bits taken least-significant-first, `j` encoded as one byte, `F`
-reading the wrong bit, the subverter skipping its test of `F`, the counter never advancing,
-IV replacement applied to every ciphertext, "key recovered" rendered without comparing to
-the key, and the counter-mode increment wrapping at 64 bits.
+`e2e/verdict-mutations.json` to an isolated `git archive HEAD` tree, confirms the owning
+test passed unmutated in the same run, confirms the build succeeded and the bundle hash
+moved, and confirms the owning test then failed naming itself. **Ten of ten are killed.**
+They are: key bits taken least-significant-first; `j` encoded as one byte instead of four;
+`F` reading the most significant bit of the HMAC byte; the subverter accepting its first
+candidate without testing `F`; the counter never advancing, so the same key bit leaks every
+time; IV replacement applied to every ciphertext rather than the first; "key recovered"
+rendered without comparing the bytes with the key; the counter-mode increment wrapping at
+64 bits; and the two bites the negative claim needs — contradicting the claim sentence, and
+inverting a check inside the fixture. Each record in the ledger is written by the run that
+produced it, and `e2e/global-teardown.ts` fails any browser run in which a recorded kill's
+assertion was not actually executed, so a record cannot outlive the test behind it.
 
 ---
 
