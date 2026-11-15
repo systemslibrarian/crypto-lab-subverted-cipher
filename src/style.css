@@ -1,0 +1,394 @@
+/* Subverted Cipher — theme + component styles.
+   Dark is the only theme (:root). The always-dark shared top bar owns its own
+   styles; base element rules here are scoped to #app so they never fight it. */
+
+:root {
+  color-scheme: dark;
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface-2: #1b2230;
+  --border: #2b3440;
+  --control-border: #626d7a;
+  --text: #e6edf3;
+  --text-dim: #b3bdc8; /* muted via lower lightness, never opacity */
+  --accent: #a3c4bc; /* brand accent (catalog card) — also read by the shared header */
+  --accent-ink: #0c1a16; /* text on an accent fill: 11.9:1 on sage */
+  --accent-text: #a3c4bc; /* accent as text / links / borders on the page bg: 9.2:1 */
+  --ok: #4ac26b;
+  --ok-text: #7ee29a;
+  --bad: #f85149;
+  --bad-text: #ff8b84;
+  --alarm: #e8a13c;
+  --alarm-text: #f4bd6a;
+  --radius: 10px;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+  background-color: var(--bg); /* longhand — axe/WebKit miss the shorthand */
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.55;
+}
+
+#app {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 clamp(0.9rem, 3vw, 2rem) 3rem;
+}
+
+#app a {
+  color: var(--accent-text);
+  text-decoration: underline; /* persistent underline, not color alone */
+  text-underline-offset: 2px;
+}
+#app code {
+  font-family: var(--mono);
+}
+#app :is(button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+}
+
+/* ---------- hero (this lab owns it; fleet-consistent by review) ---------- */
+.cl-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:clamp(1rem,4vw,3rem);flex-wrap:wrap;margin:clamp(1rem,3vw,2rem) 0 1.5rem;}
+.cl-hero-main{flex:1 1 22rem;min-width:min(100%,20rem);}
+.cl-hero-title{margin:0;font-size:clamp(1.6rem,3.8vw,2.7rem);font-weight:700;line-height:1.1;letter-spacing:.01em;}
+.cl-hero-sub{margin:.4rem 0 0;font-size:clamp(.9rem,1.6vw,1.05rem);letter-spacing:.01em;opacity:.85;}
+.cl-hero-desc{margin:.55rem 0 0;font-size:1rem;line-height:1.5;color:var(--text-dim);max-width:60ch;}
+.cl-hero-why{flex:0 1 min(40%,26rem);min-width:min(100%,15rem);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.05rem;background:color-mix(in oklab,var(--accent) 6%,transparent);}
+.cl-hero-why-label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.14em;}
+.cl-hero-why-text{margin:.35rem 0 0;font-size:.95rem;line-height:1.5;}
+@media (max-width:640px){.cl-hero{flex-direction:column;}.cl-hero-main{flex-basis:auto;min-width:0;}.cl-hero-why{flex-basis:auto;width:100%;}}
+.cl-hero-why{box-sizing:border-box;}
+/* Muted by lightness, not opacity: the standard snippet's opacity:.85 is overridden here. */
+.cl-hero-sub { color: var(--accent-text); opacity: 1; }
+.cl-hero-why-label { color: var(--accent-text); }
+
+.scope-line { margin: 0 0 1rem; }
+
+/* ---------- tabs ---------- */
+.tabs { margin: 0.5rem 0 1.25rem; }
+.tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+.tab-btn {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid transparent; /* a layout spacer, filled in for the active tab */
+  border-radius: var(--radius);
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+}
+/* The hover fill needs an edge of its own (SC 1.4.11): --surface-2 alone is
+   1.19:1 against the page. --control-border clears 3:1. */
+.tab-btn:hover { color: var(--text); background: var(--surface-2); border-color: var(--control-border); }
+.tab-btn.active {
+  color: var(--accent-ink);
+  background: var(--accent);
+  /* --accent-ink, not --accent: a border the same colour as the fill is no edge. */
+  border-color: var(--accent-ink);
+}
+
+/* ---------- panels ---------- */
+.panel { animation: fade 0.2s ease; }
+.panel-intro h2 { font-size: 1.35rem; margin: 0 0 0.5rem; }
+.panel-intro p { color: var(--text-dim); margin: 0 0 0.6rem; max-width: 72ch; }
+.panel-intro p code, .callout code, .check-explain code, .holder-note code { background: var(--surface-2); padding: 0.05em 0.3em; border-radius: 4px; color: var(--text); }
+
+.controls {
+  display: grid;
+  gap: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem;
+  margin: 1rem 0;
+}
+.control { display: grid; gap: 0.4rem; }
+.control > label, .control-label { font-weight: 600; font-size: 0.9rem; }
+.input-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.help { font-size: 0.82rem; color: var(--text-dim); margin: 0.15rem 0 0; }
+
+.mono-input, .msg-input {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+}
+.mono-input[aria-invalid="true"], .msg-input[aria-invalid="true"] { border-color: var(--bad); }
+.msg-input { resize: vertical; min-height: 3.2rem; }
+.num-input { width: 6rem; }
+
+.btn {
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  /* --control-border, not --border: the divider token measures 1.27:1 against this fill. */
+  border: 1px solid var(--control-border);
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent-ink); }
+.btn-primary:hover:not(:disabled) { filter: brightness(1.06); }
+.btn-ghost { background: var(--surface-2); color: var(--text); }
+.btn-ghost:hover:not(:disabled) { border-color: var(--accent-text); }
+.btn-danger { background: var(--surface-2); color: var(--bad-text); border-color: var(--bad); }
+
+/* The switch in exhibit 2: a real button with role="switch". Its track is
+   the control boundary (--control-border, 3:1 on --surface); the ON state
+   fills with the accent and carries --accent-ink text and edge. */
+.switch {
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--control-border);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+.switch-knob {
+  display: inline-block;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: var(--text-dim);
+  border: 1px solid var(--control-border);
+}
+.switch[aria-checked="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent-ink); }
+.switch[aria-checked="true"] .switch-knob { background: var(--accent-ink); border-color: var(--accent-ink); }
+
+/* The persistent status line: the subverted state is announced in TEXT. */
+.status-line {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0.6rem 0 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.9rem;
+}
+.status-line.is-subverted { border-color: var(--alarm); background: color-mix(in oklab, var(--alarm) 14%, var(--surface)); }
+.status-line .status-icon { font-weight: 700; }
+.status-line.is-subverted .status-icon { color: var(--alarm-text); }
+
+/* ---------- the two panels of exhibits 2-4 ---------- */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; align-items: start; }
+@media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+.side {
+  display: grid;
+  gap: 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  min-width: 0;
+}
+.side h3 { margin: 0; font-size: 1.05rem; }
+.side-user { border-top: 4px solid var(--accent); }
+.side-holder { border-top: 4px solid var(--alarm); }
+.side-kicker { font-size: 0.78rem; letter-spacing: 0.1em; font-weight: 700; color: var(--text-dim); }
+.holder-note { margin: 0; font-size: 0.88rem; color: var(--text-dim); }
+
+/* ---------- output / fields ---------- */
+.output { display: grid; gap: 1rem; margin-top: 0.5rem; }
+.field { display: grid; gap: 0.2rem; min-width: 0; }
+.field-label { font-size: 0.8rem; font-weight: 600; color: var(--text-dim); }
+.field-sub { font-weight: 400; }
+.field-value {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.82rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  overflow-wrap: anywhere; /* wrap long hex instead of a scroll region */
+  color: var(--text);
+}
+.field-value.plain { font-family: var(--sans); }
+.hex { font-family: var(--mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.hex-iv { color: var(--accent-text); font-weight: 700; }
+.hex-iv.is-leak { color: var(--alarm-text); text-decoration: underline; text-decoration-style: wavy; }
+.hex-unknown { color: var(--text-dim); }
+
+/* ---------- the ciphertext log ---------- */
+.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.log-row {
+  display: grid;
+  grid-template-columns: 2.6rem 1fr;
+  gap: 0.15rem 0.5rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-2);
+  font-size: 0.82rem;
+  min-width: 0;
+}
+.log-idx { font-family: var(--mono); font-weight: 700; color: var(--text-dim); grid-row: span 3; }
+.log-msg { overflow-wrap: anywhere; }
+.log-msg-empty { color: var(--text-dim); font-style: italic; }
+.log-empty { grid-template-columns: 1fr; color: var(--text-dim); }
+.log-meta { color: var(--text-dim); font-size: 0.78rem; }
+.log-more { font-size: 0.82rem; color: var(--text-dim); margin: 0.2rem 0 0; }
+.log-tried { font-family: var(--mono); font-weight: 700; color: var(--text); }
+
+/* ---------- verdicts (icon + text + color) ---------- */
+.verdict {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: var(--surface-2);
+}
+.verdict-icon { font-size: 1.05rem; line-height: 1; }
+.verdict-pass { background: color-mix(in oklab, var(--ok) 16%, var(--surface)); border-color: var(--ok); }
+.verdict-pass .verdict-icon { color: var(--ok-text); }
+.verdict-fail { background: color-mix(in oklab, var(--bad) 15%, var(--surface)); border-color: var(--bad); }
+.verdict-fail .verdict-icon { color: var(--bad-text); }
+.verdict-alarm { background: color-mix(in oklab, var(--alarm) 20%, var(--surface)); border-color: var(--alarm); }
+.verdict-alarm .verdict-icon { color: var(--alarm-text); }
+.verdict-neutral { border-color: var(--control-border); }
+.verdict-neutral .verdict-icon { color: var(--text-dim); }
+.checks { display: grid; gap: 0.45rem; }
+.check-row .check-summary { font-weight: 400; color: var(--text-dim); font-size: 0.85rem; }
+.verdict-stack { display: grid; gap: 0.2rem; }
+
+/* ---------- callouts ---------- */
+.callout {
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.88rem;
+  border: 1px solid var(--border);
+  margin: 0.9rem 0;
+}
+.callout-info { background: var(--surface); color: var(--text-dim); }
+.callout-danger { background: color-mix(in oklab, var(--bad) 12%, var(--surface)); border-color: var(--bad); color: var(--text); }
+.callout-caveat { background: color-mix(in oklab, var(--alarm) 12%, var(--surface)); border-color: var(--alarm); color: var(--text); }
+
+/* ---------- the negative claim (exhibit 4) ---------- */
+.negative-claim { display: grid; gap: 0.5rem; margin: 1rem 0; padding: 0.9rem; border: 2px solid var(--alarm); border-radius: var(--radius); background: var(--surface); }
+.negative-claim-text { margin: 0; font-size: 0.95rem; }
+
+/* ---------- the bit grid (exhibit 4) and the histogram ---------- */
+.bitgrid { display: grid; grid-template-columns: repeat(16, 1fr); gap: 2px; max-width: 26rem; }
+.bit {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-align: center;
+  padding: 0.1rem 0;
+  border-radius: 3px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.bit.is-unknown { color: var(--text-dim); border-style: dashed; }
+.bit.is-byte-start { border-left: 2px solid var(--accent-text); }
+.histogram { display: flex; align-items: flex-end; gap: 1px; height: 3.2rem; border-bottom: 1px solid var(--control-border); padding-top: 0.2rem; }
+.histogram-bar { flex: 1 1 0; background: var(--accent); min-height: 1px; }
+.histogram-caption { margin: 0.25rem 0 0; font-size: 0.78rem; color: var(--text-dim); }
+
+/* ---------- exhibit 5 table ---------- */
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+.data-table { border-collapse: collapse; width: 100%; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.data-table th, .data-table td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.data-table thead th { background: var(--surface-2); font-size: 0.78rem; }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.rate-bars { display: grid; gap: 0.25rem; }
+.rate-bar { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.5rem; align-items: center; font-size: 0.8rem; }
+.rate-bar-track { height: 0.7rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.rate-bar-fill { height: 100%; background: var(--accent); }
+.rate-bar-fill.is-expected { background: var(--text-dim); }
+.progress { font-size: 0.85rem; color: var(--text-dim); }
+
+/* ---------- exhibit 6 ---------- */
+.state-row { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.88rem; }
+.state-row code { background: var(--surface-2); padding: 0.05em 0.35em; border-radius: 4px; }
+.section-block { display: grid; gap: 0.6rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 0.8rem 0; }
+.section-block h3 { margin: 0; font-size: 1rem; }
+
+/* ---------- disclosures ---------- */
+#app summary { cursor: pointer; font-weight: 600; }
+.disclosure, .learner-check { border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.85rem; background: var(--surface); margin: 0.6rem 0; }
+.disclosure-body { display: grid; gap: 0.5rem; margin-top: 0.6rem; }
+.disclosure-body p { margin: 0; color: var(--text-dim); font-size: 0.9rem; }
+.disclosure-body ul { margin: 0; padding-left: 1.2rem; color: var(--text-dim); font-size: 0.9rem; }
+.learner-check { background: color-mix(in oklab, var(--accent) 5%, var(--surface)); }
+.check-body { margin-top: 0.6rem; display: grid; gap: 0.55rem; }
+.check-q { margin: 0; font-size: 0.92rem; }
+.check-opt { font-size: 0.85rem; }
+.check-feedback { display: grid; gap: 0.35rem; }
+.check-explain { margin: 0; font-size: 0.88rem; color: var(--text-dim); }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  font-weight: 700;
+  font-size: 0.78rem;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--border);
+}
+.pill-ok { background: color-mix(in oklab, var(--ok) 18%, var(--surface)); color: var(--text); border-color: var(--ok); }
+.pill-bad { background: color-mix(in oklab, var(--bad) 18%, var(--surface)); color: var(--text); border-color: var(--bad); }
+
+.kat-list { display: grid; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
+.kat-row { display: grid; gap: 0.2rem; padding: 0.45rem 0.6rem; border: 1px solid var(--border); border-left: 3px solid var(--ok); border-radius: 7px; background: var(--surface-2); font-size: 0.82rem; }
+.kat-row.is-bad { border-left-color: var(--bad); }
+.kat-name { font-weight: 600; }
+
+/* ---------- footer ---------- */
+.scripture-footer {
+  margin-top: 2.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+.scripture-footer p { margin: 0.4rem 0; }
+.footer-links a { color: var(--accent-text); }
+
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .panel { animation: none; }
+  * { transition: none !important; }
+}
+
+/* Touch targets on coarse pointers. */
+@media (pointer: coarse) {
+  #app .btn, #app .tab-btn, #app .switch, #app .check-opt { min-height: 44px; }
+}

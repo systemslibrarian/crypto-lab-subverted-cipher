@@ -1,0 +1,134 @@
+{
+  "$comment": "Template §4.1c. Every verdict this page renders carries a data-verdict marker, and every marker is declared below -- e2e/claims.spec.ts fails on a marker the page renders that is absent from this file, and on a marker declared here that its tour never renders, so the denominator is declared rather than assumed. Each mutation is a CONCRETE PATCH (file, an anchor that must occur exactly once, its replacement), never a sentence describing an edit, and is judged by scripts/mutate.mjs in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1. A kill requires all four: the owning test PASSED unmutated in the same run; the patch actually CHANGED the file; the run served the MUTATED code (the built bundle's hash moved, and the failure does not match a shape meaning the code never ran); and the failure is the owning test's. A patch that does not compile is DOES NOT BUILD and is never a kill. For the mutations owned by a browser test, e2e/global-teardown.ts additionally fails any run in which the recorded (test, marker) pair was not actually executed -- markers.ts writes every pair it ran to a run-scoped sink -- so a record here cannot outlive the assertion behind it. The `observed` lines are written by the runner, never typed.",
+  "markers": {
+    "honest-last": "#honest-roundtrip — whether the latest honest ciphertext decrypts, under the key on screen, to the message that was typed",
+    "honest-roundtrip": "exhibit 1's round-trip check over every ciphertext it has produced",
+    "honest-no-repeat-iv": "exhibit 1's repeated-IV check",
+    "honest-iv-histogram": "exhibit 1's chi-square check on the IV byte histogram",
+    "honest-kats": "exhibit 1's five published vectors, recomputed in the browser and compared with the documents",
+    "swap-roundtrip": "exhibit 2's round-trip check, which passes under either encryptor",
+    "swap-no-repeat-iv": "exhibit 2's repeated-IV check, which passes under either encryptor",
+    "swap-iv-histogram": "exhibit 2's IV histogram check, which passes under either encryptor",
+    "swap-fbits": "exhibit 2's holder panel: how often F agrees with the user's key bit — about half under the honest encryptor, every time under the subverted one",
+    "swap-recovery": "exhibit 2's holder panel with no ciphertexts to read",
+    "iv-roundtrip": "exhibit 3's round-trip check",
+    "iv-no-repeat-iv": "exhibit 3's repeated-IV check — the reason IV replacement is done once",
+    "iv-iv-histogram": "exhibit 3's IV histogram check",
+    "iv-recovery": "exhibit 3's holder panel: whether E⁻¹(K~, IV) of the first ciphertext equals the user's key, compared on the page",
+    "bias-roundtrip": "exhibit 4's round-trip check",
+    "bias-no-repeat-iv": "exhibit 4's repeated-IV check",
+    "bias-iv-histogram": "exhibit 4's IV histogram check",
+    "bias-recovery": "exhibit 4's holder panel: whether the bits F read off the ciphertexts are the user's key, compared on the page",
+    "bias-step": "exhibit 4's step-by-step view: whether a candidate has been kept, and after how many draws",
+    "bias-negative-claim": "exhibit 4's negative-claim verdict, rendered only in the fixture where every user check passes AND the key has leaked",
+    "budget-rates": "exhibit 5: whether every measured failure rate sits within three standard errors of 2^−(2^c), over the runs it counted",
+    "unique-determinism": "exhibit 6: whether two encryptions at the same key, message, associated data and state are byte-identical",
+    "unique-roundtrip": "exhibit 6: the untouched ciphertext decrypts, which is the baseline the tamper result rests on",
+    "unique-tamper": "exhibit 6: whether every single-bit change to a ciphertext is rejected",
+    "unique-outoforder": "exhibit 6: whether a ciphertext made at σ = 1 is rejected by a receiver at τ = 0",
+    "unique-inorder": "exhibit 6: whether two in-order ciphertexts both decrypt",
+    "unique-replay": "exhibit 6: whether a replayed ciphertext is rejected",
+    "unique-nocoins": "exhibit 6: whether the biased-ciphertext subverter, handed this scheme, reports no coins and emits exactly the honest ciphertext"
+  },
+  "mutations": {
+    "M1": {
+      "why": "Key bits taken least-significant-first. The brief's FACTS 5 pins the order most significant bit of byte 0 first, and nothing but a fixed vector can hold it there: both orders are self-consistent, so the page would leak and recover a key it agreed with itself about.",
+      "file": "src/subverted/prf.ts",
+      "find": "  return ((key[j >> 3]! >> (7 - (j & 7))) & 1) as 0 | 1;",
+      "replace": "  return ((key[j >> 3]! >> (j & 7)) & 1) as 0 | 1;",
+      "killedBy": {
+        "runner": "vitest",
+        "spec": "src/subverted/prf.test.ts",
+        "test": "key bits are read most significant bit first"
+      },
+      "observed": null
+    },
+    "M2": {
+      "why": "The counter j encoded as one byte instead of four. Indistinguishable below 256 ciphertexts except through the fixed vector, which is the point of having one. Written to keep be32 in use, because a patch that stops compiling proves nothing.",
+      "file": "src/subverted/prf.ts",
+      "find": "  const mac = await hmacSha256(subKey, concat(ct, be32(j)));",
+      "replace": "  const mac = await hmacSha256(subKey, concat(ct, be32(j).subarray(3)));",
+      "killedBy": {
+        "runner": "vitest",
+        "spec": "src/subverted/subvert-bias.test.ts",
+        "test": "candidates tried for j = 0..15"
+      },
+      "observed": null
+    },
+    "M3": {
+      "why": "F reads the most significant bit of the HMAC byte rather than the least. Another self-consistent choice: the subverter and the extractor would agree, the key would still come out, and only the fixed vector says which bit this lab means.",
+      "file": "src/subverted/prf.ts",
+      "find": "  return (mac[0]! & 1) as 0 | 1;",
+      "replace": "  return ((mac[0]! >> 7) & 1) as 0 | 1;",
+      "killedBy": {
+        "runner": "vitest",
+        "spec": "src/subverted/prf.test.ts",
+        "test": "LEAST significant bit"
+      },
+      "observed": null
+    },
+    "M4": {
+      "why": "The subverted encryptor accepts its first candidate without testing F — the attack reduced to an ordinary encryptor. Every round trip still passes and the page still looks busy; what fails is the recovery, which is the only thing that was ever evidence. The honest control must NOT be the test that catches this, or the catch would be an accident.",
+      "file": "src/subverted/subvert-bias.ts",
+      "find": "      if (candidate.accepted) return { ok: true, ct: candidate.ct, j, tried: t + 1 };",
+      "replace": "      if (candidate.accepted || true) return { ok: true, ct: candidate.ct, j, tried: t + 1 };",
+      "killedBy": {
+        "runner": "playwright",
+        "spec": "e2e/claims.spec.ts",
+        "test": "the recovered key on screen is the user key on screen, and F read it off the rendered ciphertexts",
+        "marker": "bias-recovery"
+      },
+      "observed": null
+    },
+    "M5": {
+      "why": "The counter j never advances, so every ciphertext leaks bit 0 and the other 127 never go out. The round trips and the user-side checks are untouched.",
+      "file": "src/subverted/subvert-bias.ts",
+      "find": "    const j = this.sigma % bits;",
+      "replace": "    const j = (this.sigma % bits) * 0;",
+      "killedBy": {
+        "runner": "vitest",
+        "spec": "src/subverted/subvert-bias.test.ts",
+        "test": "the counter advances once per ciphertext and wraps at 128"
+      },
+      "observed": null
+    },
+    "M6": {
+      "why": "IV replacement applied to every ciphertext instead of the first. E(K~, K) is deterministic, so every IV becomes the same 16 bytes — which is exactly what the user's repeated-IV check looks for, and why the paper's attack carries state. The check has to be live for that sentence to be worth anything.",
+      "file": "src/subverted/subvert-iv.ts",
+      "find": "    const leaked = sigma === 0;",
+      "replace": "    const leaked = sigma >= 0;",
+      "killedBy": {
+        "runner": "playwright",
+        "spec": "e2e/claims.spec.ts",
+        "test": "the repeated-IV check is why IV replacement happens once and only once",
+        "marker": "iv-no-repeat-iv"
+      },
+      "observed": null
+    },
+    "M7": {
+      "why": "\"Key recovered\" rendered as soon as 128 bits have been extracted, without comparing them with the user's key — invariant 2 deleted. F always returns a bit, so a wrong K~ also yields 128 of them; the difference between a recovery and a coincidence is the comparison this removes.",
+      "file": "src/ui/workbench.ts",
+      "find": "    const matches = extraction.key !== null && equal(extraction.key, userKey);",
+      "replace": "    const matches = extraction.key !== null;",
+      "killedBy": {
+        "runner": "playwright",
+        "spec": "e2e/claims.spec.ts",
+        "test": "the bite fixture: with a different K~ the page says the key was NOT recovered",
+        "marker": "bias-recovery"
+      },
+      "observed": null
+    },
+    "M8": {
+      "why": "The counter-mode increment wraps at 64 bits instead of 128. Invisible on ordinary IVs — the low eight bytes are almost never all ones — so only a vector whose carry is exercised catches it, checked here against WebCrypto's own AES-CTR rather than against this lab's expectation of itself.",
+      "file": "src/subverted/ctr.ts",
+      "find": "  for (let i = BLOCK_BYTES - 1; i >= 0; i--) {",
+      "replace": "  for (let i = BLOCK_BYTES - 1; i >= 8; i--) {",
+      "killedBy": {
+        "runner": "vitest",
+        "spec": "src/subverted/ctr.test.ts",
+        "test": "carries into the high half"
+      },
+      "observed": null
+    }
+  }
+}

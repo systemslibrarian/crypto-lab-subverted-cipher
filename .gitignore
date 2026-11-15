@@ -1,0 +1,13 @@
+node_modules
+dist
+.DS_Store
+*.local
+playwright-report
+test-results
+public/deployment.json
+chat.md
+# The template's local copy stays on disk and out of the repo (template §4.1); the brief is tracked as brief.md.
+_MASTER-TEMPLATE.md
+
+# The brief is tracked as brief.md; the copy the owner pasted in stays untracked.
+crypto-lab-subverted-cipher-brief.md
