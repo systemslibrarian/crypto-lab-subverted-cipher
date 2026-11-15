@@ -89,7 +89,7 @@ export function renderBudgetPanel(root: HTMLElement): void {
       ),
     );
     const bars = h('div', { class: 'rate-bars' });
-    for (const r of rows) {
+    for (const r of rows.filter((r) => r.bits <= 4)) {
       const rate = r.failures / r.trials;
       bars.append(
         h(
@@ -108,7 +108,11 @@ export function renderBudgetPanel(root: HTMLElement): void {
     }
     tableBox.append(
       wrap,
-      h('p', { class: 'histogram-caption' }, 'The bars repeat the two rate columns at four times scale, measured above its predicted value for each budget.'),
+      h(
+        'p',
+        { class: 'histogram-caption' },
+        'The bars repeat the two rate columns at four times scale, measured above its predicted value, for the first four budgets. Past four bits both numbers are too small to draw: at five bits the prediction is about one in four billion, and at eight it is 2^−256.',
+      ),
       bars,
     );
   }
@@ -146,7 +150,7 @@ export function renderBudgetPanel(root: HTMLElement): void {
     const trials = Math.max(100, Math.min(20_000, Number(trialsInput.value) || DEFAULT_TRIALS));
     const key = randomBytes(16);
     const subKey = randomBytes(32);
-    for (const bits of [1, 2, 3, 4]) {
+    for (const bits of [1, 2, 3, 4, 5, 6, 7, 8]) {
       progress.textContent = `Running ${fmt(trials)} encryptions at a ${bits}-bit coin budget…`;
       // Yield so the status line above actually paints between budgets.
       await new Promise((r) => setTimeout(r, 0));
@@ -160,7 +164,7 @@ export function renderBudgetPanel(root: HTMLElement): void {
       renderTable();
       renderVerdict();
     }
-    progress.textContent = `Done: ${fmt(trials)} encryptions at each of four coin budgets.`;
+    progress.textContent = `Done: ${fmt(trials)} encryptions at each of eight coin budgets.`;
     running = false;
   }
 
@@ -186,7 +190,7 @@ export function renderBudgetPanel(root: HTMLElement): void {
         { class: 'control' },
         h('label', { for: 'budget-trials' }, 'Encryptions per budget'),
         trialsInput,
-        h('p', { class: 'help' }, 'Between 100 and 20,000. Every rate on this page is counted from this many real runs.'),
+        h('p', { class: 'help' }, 'Between 100 and 20,000, at each of eight coin budgets. Every rate on this page is counted from this many real runs.'),
       ),
       h(
         'div',

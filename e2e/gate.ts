@@ -740,8 +740,8 @@ export async function driveAllStates(page: Page, label: string): Promise<void> {
 
   await page.locator('#budget-trials').fill('100');
   await page.locator('#budget-run').click();
-  await expect(page.locator('#budget-table tbody tr')).toHaveCount(4, { timeout: 120_000 });
-  await scanAt('exhibit 5: four budgets measured — the table, its scroll region and the bars');
+  await expect(page.locator('#budget-table tbody tr')).toHaveCount(8, { timeout: 120_000 });
+  await scanAt('exhibit 5: eight budgets measured — the table, its scroll region and the bars');
 
   await page.locator('#panel-budget details.learner-check > summary').click();
   await page.locator('#panel-budget .check-opt').nth(1).click();

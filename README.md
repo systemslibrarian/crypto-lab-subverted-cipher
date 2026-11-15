@@ -77,7 +77,10 @@ anything.
    a ciphertext being discarded for saying the wrong bit. The control: the same extraction on
    honest ciphertexts, which gets about half the bits right by chance and recovers nothing.
 5. **How little randomness it needs.** Measured failure rate of the subverter against
-   `2^−(2^c)` for coin budgets of 1 to 4 bits, counted from runs with the run count shown.
+   `2^−(2^c)` for coin budgets of 1 to 8 bits, counted from runs with the run count shown.
+   Past four bits a failure is not observable at any sample size a page can run — the
+   prediction at five bits is about one in four billion — and the table says so by printing
+   zero against it, which is the paper's "about seven bits is enough" in measured form.
 6. **A scheme with nothing to choose.** AES-128-GCM with the nonce taken from a counter both
    sides keep — the paper's §5 construction from nonce-based schemes (Theorem 6). Encrypting
    twice gives byte-identical ciphertexts; every single-bit change to a ciphertext is
@@ -238,8 +241,8 @@ assertion was not actually executed, so a record cannot outlive the test behind 
 
 Measured in Chromium on an Apple-silicon laptop. The 128-ciphertext run in exhibit 4 does
 about 276 AES-CTR encryptions and as many HMAC evaluations in **0.14 s**. Exhibit 5 at its
-default 2,000 runs per budget does 8,000 subverted encryptions across four budgets in
-**0.3 s**, with a progress line between budgets. Exhibit 6 tests every single-bit change to
+default 2,000 runs per budget does 16,000 subverted encryptions across eight budgets in
+**0.6 s**, with a progress line between budgets. Exhibit 6 tests every single-bit change to
 a 58-byte ciphertext — 464 real AES-GCM decryptions — in **0.01 s**. The slow part of this
 lab is not the cryptography: it is the 1,000-key round-trip test and the 150,000-encryption
 statistics suite, which together account for most of the unit suite's 44 seconds.

@@ -341,7 +341,7 @@ test.describe('the other exhibits say what they computed', () => {
     await page.getByRole('tab', { name: /How little randomness/ }).click();
     await page.locator('#budget-trials').fill('200');
     await page.locator('#budget-run').click();
-    await expect(page.locator('#budget-table tbody tr')).toHaveCount(4, { timeout: 180_000 });
+    await expect(page.locator('#budget-table tbody tr')).toHaveCount(8, { timeout: 180_000 });
     const table = await page.locator('#budget-table tbody tr').evaluateAll((trs) =>
       trs.map((tr) => ({
         trials: Number(tr.querySelector('[data-trials]')!.getAttribute('data-trials')),
@@ -362,6 +362,9 @@ test.describe('the other exhibits say what they computed', () => {
     // and 200 runs put the standard error at about 0.03.
     expect(table[0]!.rate).toBeGreaterThan(0.15);
     expect(table[0]!.rate).toBeLessThan(0.35);
+    // And past four bits a failure is not observable at any sample size a page
+    // can run: 2^-32 at five bits. Zero is the honest reading, not a bug.
+    for (const r of table.slice(4)) expect(r.failures).toBe(0);
   });
 
   test('exhibit 6 prints two identical ciphertexts and a subverter forced to emit the honest one', async ({ page }) => {
