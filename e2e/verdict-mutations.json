@@ -141,20 +141,20 @@
         "test": "128 subverted ciphertexts: every user check reports success and the key has still leaked",
         "marker": "bias-negative-claim"
       },
-      "observed": null
+      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at 81bcec4, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the playwright run judged the mutated build itself. Baseline (unmutated, same session): 21 passed. src/ui/workbench.ts md5 02159329138a -> 6b76f80b1768; bundle 6d452cf34235 -> 1e7c8155b3cd -> 6d452cf34235. Mutated run FAILED in \"128 subverted ciphertexts: every user check reports success and the key has still leaked\": ✘  11 [claims] › e2e/claims.spec.ts:239:3 › the negative claim (template §4.1d) › 128 subverted ciphertexts: every user check reports success and the key has still leaked (6.5s)"
     },
     "M10": {
-      "why": "A check inside the negative-claim fixture inverted: the repeated-IV check now reports failure on distinct IVs. Template §4.1d's other bite -- break a check inside the fixture and the SECOND assertion must fail, because a fixture in which something is already red is demonstrating the mechanism working rather than its limit.",
+      "why": "A check inside the negative-claim fixture inverted: the repeated-IV check now counts DISTINCT IVs as repeats, so it reports failure on the very ciphertexts the fixture produces. Template §4.1d's other bite -- break a check inside the fixture and the SECOND assertion must fail, because a fixture in which something is already red is demonstrating the mechanism working rather than its limit. Written as an inverted condition rather than an inverted return, because flipping the return narrows `repeats` to 0 in the other branch and the patch stops compiling, which proves nothing.",
       "file": "src/subverted/tests.ts",
-      "find": "  return repeats === 0\n    ? { id: 'no-repeat-iv', label, state: 'pass',",
-      "replace": "  return repeats !== 0\n    ? { id: 'no-repeat-iv', label, state: 'pass',",
+      "find": "    if (seen.has(iv)) repeats++;",
+      "replace": "    if (!seen.has(iv)) repeats++;",
       "killedBy": {
         "runner": "playwright",
         "spec": "e2e/claims.spec.ts",
         "test": "128 subverted ciphertexts: every user check reports success and the key has still leaked",
         "marker": "bias-no-repeat-iv"
       },
-      "observed": null
+      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at 81bcec4, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the playwright run judged the mutated build itself. Baseline (unmutated, same session): 21 passed. src/subverted/tests.ts md5 ca13fc217f8e -> e7bdf4d00549; bundle 6d452cf34235 -> no build -> 6d452cf34235. VERDICT DOES NOT BUILD: "
     }
   }
 }
