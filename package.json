@@ -12,7 +12,8 @@
     "test:a11y": "playwright test",
     "test:claims": "playwright test --project=claims",
     "test:maintenance": "node --test tests/maintenance-controls.node.mjs",
-    "test:mutation": "node scripts/mutate.mjs"
+    "mutate": "node scripts/mutate.mjs",
+    "test:mutation": "node scripts/mutate.mjs run"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

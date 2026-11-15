@@ -158,6 +158,8 @@ npm run dev        # http://localhost:5173/crypto-lab-subverted-cipher/
 npm test           # the unit suite
 npm run build      # maintenance controls, typecheck, production build
 npm run test:a11y  # builds, serves, then the axe WCAG gate and the claims suite
+npm run mutate list     # the recorded mutations and what owns each
+npm run test:mutation   # judge them all in an isolated tree (needs a clean tree)
 ```
 
 ---
