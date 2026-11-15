@@ -41,7 +41,7 @@
         "spec": "src/subverted/prf.test.ts",
         "test": "key bits are read most significant bit first"
       },
-      "observed": null
+      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at dd01c17, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the vitest run judged the mutated build itself. Baseline (unmutated, same session): 1 passed. src/subverted/prf.ts md5 a7fcfe7486e9 -> c1a01781d39c; bundle 6d452cf34235 -> no build -> 6d452cf34235. VERDICT DOES NOT BUILD: "
     },
     "M2": {
       "why": "The counter j encoded as one byte instead of four. Indistinguishable below 256 ciphertexts except through the fixed vector, which is the point of having one. Written to keep be32 in use, because a patch that stops compiling proves nothing.",
@@ -53,7 +53,7 @@
         "spec": "src/subverted/subvert-bias.test.ts",
         "test": "candidates tried for j = 0..15"
       },
-      "observed": null
+      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at dd01c17, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the vitest run judged the mutated build itself. Baseline (unmutated, same session): 1 passed. src/subverted/prf.ts md5 a7fcfe7486e9 -> 798972810957; bundle 6d452cf34235 -> no build -> 6d452cf34235. VERDICT DOES NOT BUILD: "
     },
     "M3": {
       "why": "F reads the most significant bit of the HMAC byte rather than the least. Another self-consistent choice: the subverter and the extractor would agree, the key would still come out, and only the fixed vector says which bit this lab means.",
@@ -65,7 +65,7 @@
         "spec": "src/subverted/prf.test.ts",
         "test": "LEAST significant bit"
       },
-      "observed": null
+      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at dd01c17, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the vitest run judged the mutated build itself. Baseline (unmutated, same session): 1 passed. src/subverted/prf.ts md5 a7fcfe7486e9 -> 9b2779baa2b8; bundle 6d452cf34235 -> no build -> 6d452cf34235. VERDICT DOES NOT BUILD: "
     },
     "M4": {
       "why": "The subverted encryptor accepts its first candidate without testing F — the attack reduced to an ordinary encryptor. Every round trip still passes and the page still looks busy; what fails is the recovery, which is the only thing that was ever evidence. The honest control must NOT be the test that catches this, or the catch would be an accident.",
@@ -78,7 +78,7 @@
         "test": "the recovered key on screen is the user key on screen, and F read it off the rendered ciphertexts",
         "marker": "bias-recovery"
       },
-      "observed": null
+      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at dd01c17, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the playwright run judged the mutated build itself. Baseline (unmutated, same session): FAILED. src/subverted/subvert-bias.ts md5 04e4be2626a6 -> d9c34e814d7e; bundle 6d452cf34235 -> no build -> 6d452cf34235. VERDICT BASELINE ALREADY RED: "
     },
     "M5": {
       "why": "The counter j never advances, so every ciphertext leaks bit 0 and the other 127 never go out. The round trips and the user-side checks are untouched.",
@@ -90,7 +90,7 @@
         "spec": "src/subverted/subvert-bias.test.ts",
         "test": "the counter advances once per ciphertext and wraps at 128"
       },
-      "observed": null
+      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at dd01c17, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the vitest run judged the mutated build itself. Baseline (unmutated, same session): 1 passed. src/subverted/subvert-bias.ts md5 04e4be2626a6 -> 49641ca348a1; bundle 6d452cf34235 -> no build -> 6d452cf34235. VERDICT DOES NOT BUILD: "
     },
     "M6": {
       "why": "IV replacement applied to every ciphertext instead of the first. E(K~, K) is deterministic, so every IV becomes the same 16 bytes — which is exactly what the user's repeated-IV check looks for, and why the paper's attack carries state. The check has to be live for that sentence to be worth anything.",
@@ -103,7 +103,7 @@
         "test": "the repeated-IV check is why IV replacement happens once and only once",
         "marker": "iv-no-repeat-iv"
       },
-      "observed": null
+      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at dd01c17, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the playwright run judged the mutated build itself. Baseline (unmutated, same session): FAILED. src/subverted/subvert-iv.ts md5 a07effa05ad0 -> fd0401622796; bundle 6d452cf34235 -> no build -> 6d452cf34235. VERDICT BASELINE ALREADY RED: "
     },
     "M7": {
       "why": "\"Key recovered\" rendered as soon as 128 bits have been extracted, without comparing them with the user's key — invariant 2 deleted. F always returns a bit, so a wrong K~ also yields 128 of them; the difference between a recovery and a coincidence is the comparison this removes.",
@@ -116,7 +116,7 @@
         "test": "the bite fixture: with a different K~ the page says the key was NOT recovered",
         "marker": "bias-recovery"
       },
-      "observed": null
+      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at dd01c17, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the playwright run judged the mutated build itself. Baseline (unmutated, same session): FAILED. src/ui/workbench.ts md5 02159329138a -> 5d878be406b4; bundle 6d452cf34235 -> no build -> 6d452cf34235. VERDICT BASELINE ALREADY RED: "
     },
     "M8": {
       "why": "The counter-mode increment wraps at 64 bits instead of 128. Invisible on ordinary IVs — the low eight bytes are almost never all ones — so only a vector whose carry is exercised catches it, checked here against WebCrypto's own AES-CTR rather than against this lab's expectation of itself.",
@@ -128,7 +128,7 @@
         "spec": "src/subverted/ctr.test.ts",
         "test": "carries into the high half"
       },
-      "observed": null
+      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at dd01c17, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the vitest run judged the mutated build itself. Baseline (unmutated, same session): 1 passed. src/subverted/ctr.ts md5 20648f9618b7 -> d25ff836bafc; bundle 6d452cf34235 -> no build -> 6d452cf34235. VERDICT DOES NOT BUILD: "
     }
   }
 }

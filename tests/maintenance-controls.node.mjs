@@ -160,8 +160,19 @@ test('the mutation ledger is concrete patches, and every patch still applies exa
   for (const [id, m] of Object.entries(ledger.mutations)) {
     assert.ok(m.file && m.find && m.replace, `${id} must be a concrete patch, not a sentence`);
     const source = readFileSync(new URL(m.file, root), 'utf8');
-    const occurrences = source.split(m.find).length - 1;
-    assert.equal(occurrences, 1, `${id}: its anchor occurs ${occurrences} times in ${m.file}, expected exactly 1`);
+    const anchors = source.split(m.find).length - 1;
+    const applied = source.split(m.replace).length - 1;
+    // Exactly one direction must be applicable, and exactly once. Requiring the
+    // ANCHOR alone would be a catch-22: `npm run build` runs these controls, and
+    // scripts/mutate.mjs builds the tree with a patch APPLIED, so every mutation
+    // would report DOES NOT BUILD and no kill could ever be recorded. Measured:
+    // all five Vitest-owned mutations did exactly that before this read both
+    // directions.
+    assert.equal(
+      anchors + applied,
+      1,
+      `${id}: ${m.file} contains the anchor ${anchors} time(s) and the replacement ${applied} time(s); exactly one, exactly once`,
+    );
     assert.notEqual(m.find, m.replace, `${id}: the patch is a no-op`);
     assert.ok(['vitest', 'playwright'].includes(m.killedBy.runner), `${id}: unknown runner`);
     if (m.killedBy.runner === 'playwright') {

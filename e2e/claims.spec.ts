@@ -4,6 +4,17 @@ import { boot } from './gate';
 import { expectClaim, expectVerdict, verdictState } from './markers';
 
 /**
+ * "No ciphertexts" is one empty-state row, not an empty list: a `role="list"`
+ * with no `listitem` children is an aria-required-children failure, and an
+ * empty region is also what a scan happily calls accessible. So the assertion
+ * is the SHAPE of the empty state rather than a count of zero.
+ */
+async function expectLogEmpty(page: Page, panel: string): Promise<void> {
+  await expect(page.locator(`#${panel}-log .log-row:not(.log-empty)`)).toHaveCount(0);
+  await expect(page.locator(`#${panel}-log .log-empty`)).toHaveCount(1);
+}
+
+/**
  * The claims suite: what this lab's interface SAYS and whether it is TRUE, as
  * opposed to what it is shaped like (template §4.1b). Structure lives in
  * `gate.ts`; a failure here names copy or correctness as the subject, which is
@@ -76,7 +87,7 @@ const keyBit = (key: Uint8Array, j: number): number => (key[j >> 3]! >> (7 - (j 
 /** Every ciphertext row currently on screen in a panel, with its message. */
 async function rows(page: Page, panel: string): Promise<Array<{ ct: Uint8Array; msg: string; tried: number | null }>> {
   return (
-    await page.locator(`#${panel}-log .log-row`).evaluateAll((els) =>
+    await page.locator(`#${panel}-log .log-row:not(.log-empty)`).evaluateAll((els) =>
       els.map((el) => ({
         ctHex: el.getAttribute('data-ct') ?? '',
         msg: (el.querySelector('.log-msg')?.textContent ?? '').trim(),
@@ -169,7 +180,7 @@ test.describe('evidence is retired when it stops belonging to the controls on sc
     await openBiasWith128(page);
     await expectVerdict(page, 'bias-recovery', { state: 'alarm' });
     await page.locator('#bias-userkey').fill('ffeeddccbbaa99887766554433221100');
-    await expect(page.locator('#bias-log .log-row')).toHaveCount(0);
+    await expectLogEmpty(page, 'bias');
     await expectVerdict(page, 'bias-recovery', { state: 'neutral', text: /NO CIPHERTEXTS YET/ });
   });
 
@@ -177,7 +188,7 @@ test.describe('evidence is retired when it stops belonging to the controls on sc
     await boot(page);
     await openBiasWith128(page);
     await page.locator('#bias-subkey').fill('c0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedf');
-    await expect(page.locator('#bias-log .log-row')).toHaveCount(0);
+    await expectLogEmpty(page, 'bias');
     await expectVerdict(page, 'bias-recovery', { state: 'neutral' });
     // And the second panel's key follows it, because they are one key.
     await expect(page.locator('#bias-holderkey')).toHaveValue(
@@ -201,7 +212,7 @@ test.describe('evidence is retired when it stops belonging to the controls on sc
     await expect(page.locator('#swap-log .log-row')).toHaveCount(8);
     await page.locator('#swap-switch').click();
     await expect(page.locator('#swap-switch')).toHaveAttribute('aria-checked', 'true');
-    await expect(page.locator('#swap-log .log-row')).toHaveCount(0);
+    await expectLogEmpty(page, 'swap');
     await expectVerdict(page, 'swap-recovery', { state: 'neutral', text: /NO CIPHERTEXTS YET/ });
   });
 
