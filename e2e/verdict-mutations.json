@@ -154,7 +154,7 @@
         "test": "128 subverted ciphertexts: every user check reports success and the key has still leaked",
         "marker": "bias-no-repeat-iv"
       },
-      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at 81bcec4, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the playwright run judged the mutated build itself. Baseline (unmutated, same session): 21 passed. src/subverted/tests.ts md5 ca13fc217f8e -> e7bdf4d00549; bundle 6d452cf34235 -> no build -> 6d452cf34235. VERDICT DOES NOT BUILD: "
+      "observed": "re-derived 2026-11-15 by scripts/mutate.mjs at 177a1e2, in an isolated `git archive HEAD` tree with node_modules symlinked and CI=1, so the playwright run judged the mutated build itself. Baseline (unmutated, same session): 21 passed. src/subverted/tests.ts md5 ca13fc217f8e -> 4cd09f86029f; bundle 6d452cf34235 -> 904d88b55076 -> 6d452cf34235. Mutated run FAILED in \"128 subverted ciphertexts: every user check reports success and the key has still leaked\": ✘  12 [claims] › e2e/claims.spec.ts:239:3 › the negative claim (template §4.1d) › 128 subverted ciphertexts: every user check reports success and the key has still leaked (19.5s)"
     }
   }
 }
