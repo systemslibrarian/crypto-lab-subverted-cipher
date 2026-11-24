@@ -1,7 +1,7 @@
 # Subverted Cipher
 
 Algorithm-substitution attacks on AES counter mode, in the browser: an encryptor that
-decrypts correctly and passes every test a user can run while handing its key to whoever
+decrypts correctly and can pass the checks in this exhibit while handing its key to whoever
 holds the subversion key, by IV replacement in one ciphertext and by biased ciphertexts at
 one key bit each, then a deterministic unique-ciphertext scheme with no room to hide a bit.
 

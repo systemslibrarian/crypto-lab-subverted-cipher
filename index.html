@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Algorithm-substitution attacks on AES-CTR in the browser: an encryptor that decrypts correctly and passes every user-side test while leaking its key by IV replacement and by biased ciphertexts, then a unique-ciphertext AES-GCM scheme with nothing to choose."
+      content="Algorithm-substitution attacks on AES-CTR in the browser: an encryptor that decrypts correctly and can pass the displayed checks while leaking its key by IV replacement and by biased ciphertexts, then a unique-ciphertext AES-GCM scheme with nothing to choose."
     />
 
     <!-- Social meta -->
@@ -168,8 +168,8 @@
           <h1 class="cl-hero-title">Subverted Cipher</h1>
           <p class="cl-hero-sub">Algorithm substitution · AES-CTR that leaks its own key · unique ciphertexts</p>
           <p class="cl-hero-desc">
-            Swap a real AES-CTR encryptor for one that still decrypts correctly and passes every check you
-            can run with your own key, watch the holder of a second key read your key out of the
+            Swap a real AES-CTR encryptor for one that still decrypts correctly and can pass the checks shown here
+            with your own key, watch the holder of a second key read your key out of the
             ciphertexts, then try the same trick on a scheme with nothing left to choose.
           </p>
         </div>
